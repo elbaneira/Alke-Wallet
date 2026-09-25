@@ -11,7 +11,7 @@
 
 ## 📌 Objetivos y Cumplimiento de Requerimientos
 
-El proyecto cumple al 100% con los criterios evaluados en la rúbrica del Módulo 7:
+El proyecto cumple con los criterios evaluados en la rúbrica del Módulo 7:
 
 1. **Configuración de Base de Datos Relacional:**
    - Integración con **PostgreSQL** mediante el conector `psycopg2`.
