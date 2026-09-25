@@ -1,0 +1,44 @@
+{% extends 'gestion/base.html' %}
+{% block title %}Iniciar Sesión{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h3 class="card-title text-center mb-4 font-weight-bold">Iniciar Sesión</h3>
+                    
+                    {# Muestra mensajes de error si el usuario o contraseña fallan #}
+                    {% if form.errors %}
+                        <div class="alert alert-danger p-2" role="alert">
+                            <small>Usuario o contraseña incorrectos. Inténtalo de nuevo.</small>
+                        </div>
+                    {% endif %}
+
+                    <form method="post" action="{% url 'login' %}">
+                        {# OBLIGATORIO EN DJANGO: Token de seguridad contra ataques CSRF #}
+                        {% csrf_token %}
+
+                        <!-- Campo Usuario -->
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Nombre de usuario</label>
+                            <input type="text" name="username" id="id_username" class="form-control" placeholder="Ingresa tu usuario" required autofocus>
+                        </div>
+
+                        <!-- Campo Contraseña -->
+                        <div class="mb-3">
+                            <label for="id_password" class="form-label">Contraseña</label>
+                            <input type="password" name="password" id="id_password" class="form-control" placeholder="Ingresa tu contraseña" required>
+                        </div>
+
+                        <!-- Botón Entrar -->
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">Ingresar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends 'gestion/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0 fs-5"><i class="bi bi-arrow-left-right me-2"></i>Nueva Transacción</h4>
+            </div>
+            <div class="card-body p-4">
+
+                <!-- BLOQUE DE MENSAJES Y ALERTAS RESALTADAS -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show shadow-sm border-0 d-flex align-items-center mb-4" role="alert">
+                            {% if message.tags == 'error' %}
+                                <i class="bi bi-exclamation-triangle-fill fs-4 me-2 text-danger"></i>
+                            {% elif message.tags == 'success' %}
+                                <i class="bi bi-check-circle-fill fs-4 me-2 text-success"></i>
+                            {% else %}
+                                <i class="bi bi-info-circle-fill fs-4 me-2 text-info"></i>
+                            {% endif %}
+                            <div>
+                                <strong>{% if message.tags == 'error' %}¡Atención!{% else %}Éxito:{% endif %}</strong> {{ message }}
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <!-- Cuenta Origen -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Cuenta Origen</label>
+                        <select name="cuenta_origen" class="form-select" required>
+                            {% for cuenta in cuentas %}
+                                <option value="{{ cuenta.id }}">{{ cuenta.cliente.nombre }} - N° {{ cuenta.numero_cuenta }} (Saldo: ${{ cuenta.saldo }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Tipo de Operación -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tipo de Operación</label>
+                        <select name="tipo" id="tipo_operacion" class="form-select" required>
+                            <option value="DEPOSITO">Depósito</option>
+                            <option value="RETIRO">Retiro</option>
+                            <option value="TRANSFERENCIA">Transferencia</option>
+                        </select>
+                    </div>
+
+                    <!-- Cuenta Destino -->
+                    <div class="mb-3" id="div_cuenta_destino" style="display: none;">
+                        <label class="form-label fw-bold text-primary">Cuenta Destino (*Requerido para Transferencias)</label>
+                        <select name="cuenta_destino" id="cuenta_destino" class="form-select">
+                            <option value="">-- Seleccionar Cuenta Destino --</option>
+                            {% for cuenta in cuentas %}
+                                <option value="{{ cuenta.id }}">{{ cuenta.cliente.nombre }} - N° {{ cuenta.numero_cuenta }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Monto -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Monto ($)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" step="0.01" name="monto" class="form-control" required min="1" placeholder="Ej: 15000">
+                        </div>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Descripción / Detalle</label>
+                        <input type="text" name="descripcion" class="form-control" placeholder="Ej: Transferencia por pago de servicios">
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-success font-weight-bold">
+                            Procesar Transacción
+                        </button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPT PARA MOSTRAR/OCULTAR CUENTA DESTINO SEGÚN EL TIPO -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectTipo = document.getElementById('tipo_operacion');
+        const divDestino = document.getElementById('div_cuenta_destino');
+        const selectDestino = document.getElementById('cuenta_destino');
+
+        function toggleCuentaDestino() {
+            if (selectTipo.value === 'TRANSFERENCIA') {
+                divDestino.style.display = 'block';
+                selectDestino.setAttribute('required', 'required');
+            } else {
+                divDestino.style.display = 'none';
+                selectDestino.removeAttribute('required');
+                selectDestino.value = '';
+            }
+        }
+
+        selectTipo.addEventListener('change', toggleCuentaDestino);
+        toggleCuentaDestino(); // Ejecutar al cargar la página
+    });
+</script>
+{% endblock %}
