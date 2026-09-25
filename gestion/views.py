@@ -4,7 +4,6 @@ from django.db import transaction
 from django.db.models import Sum, Q
 from django.contrib.auth.decorators import login_required
 from decimal import Decimal
-
 from .models import Cuenta, Transaccion, Cliente
 
 # --- DASHBOARD ---
@@ -22,15 +21,20 @@ def dashboard(request):
         cuenta_propia = Cuenta.objects.filter(cliente=cliente_actual).first() if cliente_actual else None
         saldo_usuario = cuenta_propia.saldo if cuenta_propia else Decimal('0.00')
 
-    # 3. Si es un CLIENTE NORMAL (como Ana López): solo ve SUS cuentas y SUS transacciones
+    # 3. Si es un CLIENTE NORMAL: ve SUS cuentas Y las cuentas donde está AUTORIZADO
     else:
         if cliente_actual:
-            cuentas = Cuenta.objects.filter(cliente=cliente_actual)
+            # Filtro combinado: cuentas propias O cuentas donde es contacto autorizado
+            cuentas = Cuenta.objects.filter(
+                Q(cliente=cliente_actual) | Q(contactos_autorizados=cliente_actual)
+            ).distinct()
+
             saldo_usuario = cuentas.aggregate(total=Sum('saldo'))['total'] or Decimal('0.00')
             
+            # Muestra transacciones asociadas a sus cuentas (propias o autorizadas)
             transacciones = Transaccion.objects.filter(
-                Q(cuenta_origen__cliente=cliente_actual) | Q(cuenta_destino__cliente=cliente_actual)
-            ).order_by('-fecha')[:10]
+                Q(cuenta_origen__in=cuentas) | Q(cuenta_destino__in=cuentas)
+            ).distinct().order_by('-fecha')[:10]
         else:
             cuentas = Cuenta.objects.none()
             transacciones = Transaccion.objects.none()
@@ -83,12 +87,17 @@ def crear_transaccion(request):
         messages.success(request, "Transacción realizada con éxito.")
         return redirect('dashboard')
 
-    # Para cargar el formulario, mostramos las cuentas que le corresponden según su rol
+    # Para cargar el formulario, cargamos cuentas propias y autorizadas
     if request.user.is_staff:
         cuentas = Cuenta.objects.all()
     else:
         cliente_actual = Cliente.objects.filter(usuario=request.user).first()
-        cuentas = Cuenta.objects.filter(cliente=cliente_actual) if cliente_actual else Cuenta.objects.none()
+        if cliente_actual:
+            cuentas = Cuenta.objects.filter(
+                Q(cliente=cliente_actual) | Q(contactos_autorizados=cliente_actual)
+            ).distinct()
+        else:
+            cuentas = Cuenta.objects.none()
 
     return render(request, 'gestion/crear_transaccion.html', {'cuentas': cuentas})
 
@@ -105,7 +114,17 @@ def realizar_transferencia(request):
 
         try:
             with transaction.atomic():
-                cuenta_origen = Cuenta.objects.select_for_update().get(cliente__usuario=request.user)
+                cliente_actual = Cliente.objects.filter(usuario=request.user).first()
+                
+                # Permite operar si es titular o usuario autorizado de la cuenta origen
+                cuenta_origen = Cuenta.objects.select_for_update().filter(
+                    Q(cliente=cliente_actual) | Q(contactos_autorizados=cliente_actual)
+                ).distinct().first()
+
+                if not cuenta_origen:
+                    messages.error(request, "No posees una cuenta activa o autorizada para realizar la operación.")
+                    return redirect('crear_transaccion')
+
                 cuenta_destino = Cuenta.objects.select_for_update().get(id=cuenta_destino_id)
 
                 if cuenta_origen.saldo < monto:

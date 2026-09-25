@@ -61,6 +61,7 @@ El proyecto cumple al 100% con los criterios evaluados en la rúbrica del Módul
                                       [ Transaccion ]
                                   (monto, tipo, fecha)
 
+```text
 
 ---
 
@@ -78,21 +79,57 @@ El proyecto cumple al 100% con los criterios evaluados en la rúbrica del Módul
 ### 1. Requisitos Previos
 Asegúrate de tener instalados **Python 3.11+**, **PostgreSQL** y **Git**.
 
+---
+
+## 🔑 Cuentas de Prueba para Evaluación
+
+Para facilitar la revisión y prueba de roles en la plataforma, puede utilizar las siguientes credenciales:
+
+### 🛠️ Administrador / Staff (Acceso Total + Panel Admin)
+
+- **Usuario:** `elbasuper`
+- **Contraseña:** `202611.` *(clave asignada)*
+- **Rol:** Acceso al dashboard global, métricas del fondo total y administración general.
+
+### 👤 Cliente Normal (Vista Privada Filtrada)
+- **Usuario:** `Juan`
+- **Contraseña:** `juan202610.` *(o la clave que le asignaste)*
+- **Cliente asociado:** Juan Pérez
+- **Rol:** Acceso únicamente a sus cuentas personales y sus propias transacciones.
+
+### 👤 Cliente Normal (Vista Privada Filtrada)
+- **Usuario:** `ana`
+- **Contraseña:** `ana202610` *(o la clave que le asignaste)*
+- **Cliente asociado:** Ana López
+- **Rol:** Acceso únicamente a sus cuentas personales y sus propias transacciones.
+
+### 👤 Cliente Normal (Vista Privada Filtrada)
+- **Usuario:** `Paola`
+- **Contraseña:** `paola202610.` *(o la clave que le asignaste)*
+- **Cliente asociado:** Paola Molina
+- **Rol:** Acceso únicamente a sus cuentas personales y sus propias transacciones.
+
+---
+
 ### 2. Clonar el Repositorio
 ```bash
 git clone [https://github.com/tu-usuario/alke-wallet.git](https://github.com/elbaneira/AlkeWallet.git)
 cd AlkeWallet
 
 ---
+
 👩‍💻 Autora:
 
 Elba Neira — Desarrollo Full Stack & Modelamiento de Base de Datos.
 
 ---
+
 📌 Ver repositorio en GitHub
 
 ⭐ Un proyecto más en el camino de convertir el aprendizaje en proyectos reales.
 
 ---
+
 © 2026 Elba Neira Arévalo
+
 ---

@@ -20,14 +20,14 @@ class Cuenta(models.Model):
         ('VIRTUAL', 'Billetera Virtual'),
     ]
 
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='cuentas')
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='cuentas_principales')
     numero_cuenta = models.CharField(max_length=20, unique=True)
     tipo_cuenta = models.CharField(max_length=10, choices=TIPO_CUENTA_CHOICES, default='VIRTUAL')
     saldo = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     creada_en = models.DateTimeField(auto_now_add=True)
-
+    contactos_autorizados = models.ManyToManyField(Cliente, blank=True, related_name="cuentas_autorizadas")
     def __str__(self):
-        return f"Cuenta {self.numero_cuenta} - {self.cliente.nombre} (${self.saldo})"
+            return f"Cuenta {self.numero_cuenta} - {self.cliente.nombre} (${self.saldo})"
 
 class Transaccion(models.Model):
     TIPO_TRANSACCION_CHOICES = [
