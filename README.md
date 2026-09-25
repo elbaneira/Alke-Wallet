@@ -35,16 +35,32 @@ El proyecto cumple al 100% con los criterios evaluados en la rúbrica del Módul
 
 ---
 
-## 🏗️ Arquitectura y Escalabilidad (Gestión de Condominios)
+## 🛠️ Arquitectura y Tecnologías
 
-La estructura modular desarrollada en este proyecto sirve como base para el sistema de **Gestión de Condominios**:
+- **Backend:** Python 3.x, Django 5.x (Patrón MVT)
+- **Base de Datos:** SQLite / MySQL con ORM de Django
+- **Frontend:** HTML5, CSS3, JavaScript, Bootstrap 5, Django Templates (con `humanize`)
+- **Seguridad:** Decoradores `@login_required`, Mixins de permisos, protección CSRF y manejo atómico de base de datos.
 
-| Componente Alke Wallet | Proyección en Gestión de Condominios |
-| :--- | :--- |
-| `Cliente` | **Copropietario / Residente** (Dueño de departamento o casa) |
-| `Cuenta` | **Unidad / Departamento** (Cuenta de gastos comunes por vivienda) |
-| `Transaccion` | **Pago de Gastos Comunes / Fondo de Reserva** |
-| `DecimalField` | **Cálculo preciso de prorrateos y cobros** |
+---
+
+## 📐 Modelo de Datos (Relaciones Principales)
+
+```text
+  [ User (Auth) ]
+        │ (1:1 / FK)
+        ▼
+   [ Cliente ] ──────── (1:N) ────────► [ Cuenta ]
+ (Datos Personales)                     (saldo, tipo_cuenta)
+                                             │
+                                   ┌─────────┴─────────┐
+                                   ▼                   ▼
+                          (cuenta_origen)      (cuenta_destino)
+                                   └─────────┬─────────┘
+                                             ▼
+                                      [ Transaccion ]
+                                  (monto, tipo, fecha)
+
 
 ---
 
