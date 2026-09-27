@@ -35,12 +35,28 @@ El proyecto cumple con los criterios evaluados en la rúbrica del Módulo 7:
 
 ---
 
+## 🎥 Demostración del Proyecto
+
+* **Duración:** ~3 minutos aprox.
+* **Contenido:** Aplicación web desarrollada con **Django 5** y **PostgreSQL**, ejecución del CRUD.
+
+Mira la demostración técnica de funcionamiento en YouTube:
+
+[![Ver Video en YouTube](https://img.youtube.com/vi/ngTyHrCc1go
+/maxresdefault.jpg)](https://youtu.be/ngTyHrCc1go)
+
+👉 **[Ver Video de Demostración de Alke Wallet](https://youtu.be/ngTyHrCc1go)**
+
+---
+
 ## 🛠️ Arquitectura y Tecnologías
 
 - **Backend:** Python 3.x, Django 5.x (Patrón MVT)
-- **Base de Datos:** SQLite / MySQL con ORM de Django
+- **Base de Datos:** PostgreSQL (`psycopg2`) en pgAdmin 4
 - **Frontend:** HTML5, CSS3, JavaScript, Bootstrap 5, Django Templates (con `humanize`)
 - **Seguridad:** Decoradores `@login_required`, Mixins de permisos, protección CSRF y manejo atómico de base de datos.
+- **ORM:** Django ORM (consultas avanzadas con filtros `Q`, agregraciones `Sum` y relaciones `ForeignKey` / `ManyToManyField`)
+- **Control de Versiones:** Git / GitHub
 
 ---
 
@@ -61,17 +77,32 @@ El proyecto cumple con los criterios evaluados en la rúbrica del Módulo 7:
                                       [ Transaccion ]
                                   (monto, tipo, fecha)
 
-```text
+
+
+ALKE WALLET
+                     │
+                     ▼
+             Modelo base aprendido
+                     │
+          ┌──────────┼──────────┐
+          ▼          ▼          ▼
+       Cliente     Cuenta   Transacción
+          │          │          │
+          └──────────┼──────────┘
+```
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## 🔑 Credenciales de Prueba
 
-- **Backend:** Python 3, Django 5 (ORM, Forms, Views, Messages).
-- **Base de Datos:** PostgreSQL.
-- **Frontend:** HTML5, CSS3, Bootstrap 5 (UI responsiva, Badges, Modales y Componentes).
-- **Librerías / Aplicaciones:** `django.contrib.humanize`, `psycopg2`.
+Para probar el sistema con perfiles configurados:
 
+| Rol | Usuario | Contraseña | Permisos |
+|---|---|---|---|
+| **Administrador / Staff** | `elbasuper` | *(202611)* | Acceso a Django Admin, creación y eliminación de cuentas |
+| **Cliente 1** | `Juan` | *(juan202610)* | Cuenta origen en demostración |
+| **Cliente 2** | `ana` | *(ana202610)* | Cuenta destino en demostración |
+| **Cliente 3** | `Paola` | *(paola202610)* | Cuenta destino en demostración |
 ---
 
 ## ⚙️ Configuración e Instalación Local
@@ -108,6 +139,27 @@ Para facilitar la revisión y prueba de roles en la plataforma, puede utilizar l
 - **Contraseña:** `paola202610.` *(o la clave que le asignaste)*
 - **Cliente asociado:** Paola Molina
 - **Rol:** Acceso únicamente a sus cuentas personales y sus propias transacciones.
+
+---
+
+## 🧪 Pruebas Unitarias
+
+El proyecto cuenta con pruebas unitarias para verificar la disponibilidad de las rutas principales e integridad del sistema.
+
+Para ejecutar las pruebas en el entorno local:
+
+```bash
+python manage.py test
+ ``` 
+🧪 Pruebas Unitarias
+
+<img src="docs/img/evidencia_pruebas.jpg" alt="Pruebas Unitarias" width="500">
+
+🧩 Proyección del proyecto
+
+La estructura desarrollada en Alke Wallet constituye una base de aprendizaje para futuros proyectos
+de gestión financiera y administrativa. Uno de los objetivos posteriores es adaptar y ampliar este 
+modelo para desarrollar una aplicación orientada a la gestión de un condominio, incorporando funcionalidades específicas para residentes, unidades, gastos comunes, pagos y administración.
 
 ---
 
