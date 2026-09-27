@@ -150,24 +150,24 @@ El proyecto cuenta con pruebas unitarias para verificar la disponibilidad de las
 Para ejecutar las pruebas en el entorno local:
 ```bash
 python manage.py test
- ``` 
+ ```
+
 🧪 Pruebas Unitarias
 
 <img width="3000" height="1017" alt="evidencia_pruebas" src="https://github.com/user-attachments/assets/fe7637e2-6d67-4c5b-a1af-781970af7dfb" />
 
 🧩 Proyección del proyecto
 
-La estructura desarrollada en Alke Wallet constituye una base de aprendizaje para futuros proyectos
-de gestión financiera y administrativa. Uno de los objetivos posteriores es adaptar y ampliar este 
-modelo para desarrollar una aplicación orientada a la gestión de un condominio, incorporando funcionalidades específicas para residentes, unidades, gastos comunes, pagos y administración.
+La estructura desarrollada en Alke Wallet constituye una base de aprendizaje para futuros proyectos de gestión financiera y administrativa. Uno de los objetivos posteriores es adaptar y ampliar este modelo para desarrollar una aplicación orientada a la gestión de un condominio, incorporando funcionalidades específicas para residentes, unidades, gastos comunes, pagos y administración.
 
 ---
 
 ### 2. Clonar el Repositorio
+
 ```bash
 git clone [https://github.com/tu-usuario/Alke-Wallet.git](https://github.com/elbaneira/Alke-Wallet.git)
 cd AlkeWallet
-
+```
 ---
 
 👩‍💻 Autora:
