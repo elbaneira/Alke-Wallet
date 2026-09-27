@@ -1,3 +1,5 @@
+from django.db.models.manager import BaseManager
+from django.http import request
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db import transaction
@@ -55,6 +57,7 @@ def dashboard(request):
 
 @login_required
 def crear_transaccion(request):
+    # 1. PROCESAMIENTO DEL FORMULARIO (POST)
     if request.method == 'POST':
         cuenta_origen_id = request.POST.get('cuenta_origen')
         cuenta_destino_id = request.POST.get('cuenta_destino')
@@ -64,94 +67,86 @@ def crear_transaccion(request):
 
         cuenta_origen = get_object_or_404(Cuenta, id=cuenta_origen_id)
 
+        # Evitar transferirse a la misma cuenta de origen
+        if tipo == 'TRANSFERENCIA' and cuenta_origen_id == cuenta_destino_id:
+            messages.error(request, "La cuenta de destino no puede ser la misma cuenta de origen.")
+            return redirect('crear_transaccion')
+
+        # Validación de saldo suficiente
         if tipo in ['RETIRO', 'TRANSFERENCIA'] and cuenta_origen.saldo < monto:
             messages.error(request, "Saldo insuficiente para realizar esta operación.")
             return redirect('crear_transaccion')
 
+        # Ejecución según el tipo de movimiento
         if tipo == 'DEPOSITO':
             cuenta_origen.saldo += monto
             cuenta_origen.save()
-            Transaccion.objects.create(cuenta_origen=cuenta_origen, tipo=tipo, monto=monto, descripcion=descripcion)
+            Transaccion.objects.create(
+                cuenta_origen=cuenta_origen, 
+                tipo=tipo, 
+                monto=monto, 
+                descripcion=descripcion
+            )
+
         elif tipo == 'RETIRO':
             cuenta_origen.saldo -= monto
             cuenta_origen.save()
-            Transaccion.objects.create(cuenta_origen=cuenta_origen, tipo=tipo, monto=monto, descripcion=descripcion)
+            Transaccion.objects.create(
+                cuenta_origen=cuenta_origen, 
+                tipo=tipo, 
+                monto=monto, 
+                descripcion=descripcion
+            )
+
         elif tipo == 'TRANSFERENCIA':
             cuenta_destino = get_object_or_404(Cuenta, id=cuenta_destino_id)
             cuenta_origen.saldo -= monto
             cuenta_destino.saldo += monto
             cuenta_origen.save()
             cuenta_destino.save()
-            Transaccion.objects.create(cuenta_origen=cuenta_origen, cuenta_destino=cuenta_destino, tipo=tipo, monto=monto, descripcion=descripcion)
+            Transaccion.objects.create(
+                cuenta_origen=cuenta_origen, 
+                cuenta_destino=cuenta_destino, 
+                tipo=tipo, 
+                monto=monto, 
+                descripcion=descripcion
+            )
 
         messages.success(request, "Transacción realizada con éxito.")
         return redirect('dashboard')
 
-    # Para cargar el formulario, cargamos cuentas propias y autorizadas
+    # 2. CARGA DEL FORMULARIO (GET)
     if request.user.is_staff:
-        cuentas = Cuenta.objects.all()
+        # El administrador ve todas las cuentas en todos los grupos
+        cuentas_origen = Cuenta.objects.all()
+        mis_cuentas = Cuenta.objects.all()
+        cuentas_terceros = Cuenta.objects.all()
     else:
+        # Buscar el cliente asociado al usuario autenticado
         cliente_actual = Cliente.objects.filter(usuario=request.user).first()
+        
         if cliente_actual:
-            cuentas = Cuenta.objects.filter(
+            # Cuentas donde el usuario es dueño o está autorizado (Origen)
+            cuentas_origen = Cuenta.objects.filter(
                 Q(cliente=cliente_actual) | Q(contactos_autorizados=cliente_actual)
             ).distinct()
+
+            # Cuentas de destino del MISMO usuario (Mis Cuentas)
+            mis_cuentas = Cuenta.objects.filter(cliente=cliente_actual)
+            
+            # Cuentas de los DEMÁS usuarios para transferir (Cuentas de Terceros)
+            cuentas_terceros = Cuenta.objects.exclude(cliente=cliente_actual)
         else:
-            cuentas = Cuenta.objects.none()
+            cuentas_origen = Cuenta.objects.none()
+            mis_cuentas = Cuenta.objects.none()
+            cuentas_terceros = Cuenta.objects.none()
 
-    return render(request, 'gestion/crear_transaccion.html', {'cuentas': cuentas})
-
-
-@login_required
-def realizar_transferencia(request):
-    if request.method == 'POST':
-        monto = Decimal(request.POST.get('monto', '0'))
-        cuenta_destino_id = request.POST.get('cuenta_destino')
-
-        if monto <= 0:
-            messages.warning(request, "El monto debe ser mayor a $0.")
-            return redirect('crear_transaccion')
-
-        try:
-            with transaction.atomic():
-                cliente_actual = Cliente.objects.filter(usuario=request.user).first()
-                
-                # Permite operar si es titular o usuario autorizado de la cuenta origen
-                cuenta_origen = Cuenta.objects.select_for_update().filter(
-                    Q(cliente=cliente_actual) | Q(contactos_autorizados=cliente_actual)
-                ).distinct().first()
-
-                if not cuenta_origen:
-                    messages.error(request, "No posees una cuenta activa o autorizada para realizar la operación.")
-                    return redirect('crear_transaccion')
-
-                cuenta_destino = Cuenta.objects.select_for_update().get(id=cuenta_destino_id)
-
-                if cuenta_origen.saldo < monto:
-                    messages.error(request, "Saldo insuficiente para realizar esta transferencia.")
-                    return redirect('crear_transaccion')
-
-                cuenta_origen.saldo -= monto
-                cuenta_destino.saldo += monto
-                cuenta_origen.save()
-                cuenta_destino.save()
-
-                Transaccion.objects.create(
-                    cuenta_origen=cuenta_origen,
-                    cuenta_destino=cuenta_destino,
-                    monto=monto,
-                    tipo='TRANSFERENCIA'
-                )
-
-                messages.success(request, f"¡Transferencia de ${monto} realizada con éxito!")
-                return redirect('dashboard')
-
-        except Cuenta.DoesNotExist:
-            messages.error(request, "La cuenta seleccionada no existe o no tienes permisos.")
-        except Exception as e:
-            messages.error(request, "Ocurrió un error inesperado. Inténtelo nuevamente.")
-
-    return render(request, 'gestion/crear_transaccion.html')
+    context = {
+        'cuentas_origen': cuentas_origen,
+        'mis_cuentas': mis_cuentas,
+        'cuentas_terceros': cuentas_terceros,
+    }
+    return render(request, 'gestion/form_transaccion.html', context)
 
 
 # --- CRUD DE CLIENTES ---
@@ -196,6 +191,11 @@ def eliminar_cliente(request, id):
 # --- CRUD DE CUENTAS ---
 
 def crear_cuenta(request):
+    # 🔒 CONTROL: Solo el staff/administrador puede crear cuentas
+    if not request.user.is_staff:
+        messages.error(request, "No tienes permisos para crear cuentas bancarias.")
+        return redirect('dashboard')
+
     if request.method == 'POST':
         cliente_id = request.POST.get('cliente')
         numero_cuenta = request.POST.get('numero_cuenta')
@@ -210,12 +210,21 @@ def crear_cuenta(request):
     clientes = Cliente.objects.all()
     return render(request, 'gestion/form_cuenta.html', {'clientes': clientes})
 
+
+@login_required
 def eliminar_cuenta(request, id):
+    # 🔒 CONTROL: Validamos si es staff/administrador
+    if not request.user.is_staff:
+        messages.error(request, "No tienes permisos para eliminar esta cuenta.")
+        return redirect('dashboard')
+
     cuenta = get_object_or_404(Cuenta, id=id)
     cuenta.delete()
     messages.success(request, "Cuenta eliminada correctamente.")
     return redirect('dashboard')
 
+
+@login_required
 def detalle_cuenta(request, id):
     cuenta = get_object_or_404(Cuenta, id=id)
     

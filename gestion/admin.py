@@ -17,7 +17,7 @@ class CuentaAdmin(admin.ModelAdmin):
 @admin.register(Transaccion)
 class TransaccionAdmin(admin.ModelAdmin):
     # Reemplazamos 'monto' por nuestro método personalizado 'monto_formateado'
-    list_display = ('id', 'tipo', 'cuenta_origen', 'cuenta_destino', 'monto_formateado', 'fecha')
+    list_display = ('id', 'tipo', 'cuenta_origen', 'cuenta_destino', 'monto', 'fecha')
     list_filter = ('tipo','fecha')
     search_fields = ('cuenta_origen__numero_cuenta', 'cuenta_destino__numero_cuenta')
 

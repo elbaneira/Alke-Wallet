@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+from decimal import Decimal
 from django.db import models
 from django.contrib.auth.models import User
 
+# 1. MODELO CLIENTE
 class Cliente(models.Model):
     # Enlace uno a uno con el usuario de Django
     usuario = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -14,20 +16,28 @@ class Cliente(models.Model):
         return f"{self.nombre} ({self.email})"
 
 class Cuenta(models.Model):
-    TIPO_CUENTA_CHOICES = [
-        ('AHORRO', 'Cuenta de Ahorro'),
+    # Opciones para el tipo de cuenta bancaria
+    TIPOS_CUENTA = [
         ('CORRIENTE', 'Cuenta Corriente'),
-        ('VIRTUAL', 'Billetera Virtual'),
+        ('VIRTUAL', 'Cuenta Virtual / Billetera'),  # 👈 Opción agregada
+        ('AHORRO', 'Cuenta de Ahorro'),
     ]
 
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='cuentas_principales')
+    # Opciones para la divisa / moneda
+    MONEDAS = [
+        ('CLP', 'Peso Chileno ($)'),
+        ('USD', 'Dólar Estadounidense (USD$)'),
+    ]
+
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='cuentas')
     numero_cuenta = models.CharField(max_length=20, unique=True)
-    tipo_cuenta = models.CharField(max_length=10, choices=TIPO_CUENTA_CHOICES, default='VIRTUAL')
-    saldo = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
-    creada_en = models.DateTimeField(auto_now_add=True)
-    contactos_autorizados = models.ManyToManyField(Cliente, blank=True, related_name="cuentas_autorizadas")
+    tipo_cuenta = models.CharField(max_length=20, choices=TIPOS_CUENTA, default='VISTA')
+    moneda = models.CharField(max_length=3, choices=MONEDAS, default='CLP')  # <--- ¡Aquí está la moneda!
+    saldo = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0.00'))
+    contactos_autorizados = models.ManyToManyField(Cliente, blank=True, related_name='cuentas_autorizadas')
+
     def __str__(self):
-            return f"Cuenta {self.numero_cuenta} - {self.cliente.nombre} (${self.saldo})"
+        return f"Cuenta {self.tipo_cuenta} {self.numero_cuenta} ({self.moneda}) - {self.cliente.nombre}"
 
 class Transaccion(models.Model):
     TIPO_TRANSACCION_CHOICES = [
@@ -38,7 +48,7 @@ class Transaccion(models.Model):
 
     cuenta_origen = models.ForeignKey(Cuenta, on_delete=models.CASCADE, related_name='transacciones_salida')
     cuenta_destino = models.ForeignKey(Cuenta, on_delete=models.CASCADE, related_name='transacciones_entrada', null=True, blank=True)
-    tipo = models.CharField(max_length=15, choices=TIPO_TRANSACCION_CHOICES)
+    tipo = models.CharField(max_length=15, choices=TIPO_TRANSACCION_CHOICES)# <--- Aquí va tipo de movimiento
     monto = models.DecimalField(max_digits=12, decimal_places=2)
     fecha = models.DateTimeField(auto_now_add=True)
     descripcion = models.CharField(max_length=255, blank=True, null=True)

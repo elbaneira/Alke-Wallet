@@ -42,8 +42,7 @@ El proyecto cumple con los criterios evaluados en la rúbrica del Módulo 7:
 
 Mira la demostración técnica de funcionamiento en YouTube:
 
-[![Ver Video en YouTube](https://img.youtube.com/vi/ngTyHrCc1go
-/maxresdefault.jpg)](https://youtu.be/ngTyHrCc1go)
+[![Ver Video en YouTube](https://img.youtube.com/vi/ngTyHrCc1go/maxresdefault.jpg)](https://youtu.be/ngTyHrCc1go)
 
 👉 **[Ver Video de Demostración de Alke Wallet](https://youtu.be/ngTyHrCc1go)**
 

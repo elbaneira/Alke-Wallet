@@ -77,9 +77,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'alkewallet_db',       # El nombre que le diste a la base de datos
-        'USER': 'postgres',           # Tu usuario de PostgreSQL
-        'PASSWORD': 'admin2026',   # Tu contraseña de PostgreSQL
+        'NAME': 'alkewallet_db',       # Nombre dela base de datos
+        'USER': 'postgres',            # Usuario de PostgreSQL
+        'PASSWORD': 'admin2026',       # Contraseña de PostgreSQL
         'HOST': 'localhost',
         'PORT': '5433',
         'OPTIONS': {

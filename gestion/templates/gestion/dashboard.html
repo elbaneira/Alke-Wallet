@@ -7,17 +7,7 @@
 <div class="row mb-4 align-items-center">
     
     <!-- Métrica exclusiva para Staff/Administradores -->
-    {% if user.is_staff %}
-    <div class="col-md-4 mb-2 mb-md-0">
-        <div class="card bg-success text-white shadow-sm border-0 p-2">
-            <div class="card-body py-2">
-                <small class="text-white-50 text-uppercase fw-bold" style="font-size: 0.75rem;">Métrica Interna (Staff)</small>
-                <h6 class="mb-1">Fondo Total Custodiado</h6>
-                <h3 class="fw-bold mb-0">${{ total_dinero|intcomma }}</h3>
-            </div>
-        </div>
-    </div>
-    {% endif %}
+    
 
     <!-- Saldo Disponible para el Usuario que Inició Sesión -->
     <div class="col-md-4 mb-2 mb-md-0">
@@ -51,7 +41,11 @@
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 fs-6 fw-bold">Cuentas Registradas</h5>
-                <a href="{% url 'crear_cuenta' %}" class="btn btn-sm btn-outline-primary">+ Nueva Cuenta</a>
+                
+                <!-- 🔒 CONTROL: Solo muestra el botón "+ Nueva Cuenta" si el usuario es STAFF -->
+                {% if user.is_staff %}
+                    <a href="{% url 'crear_cuenta' %}" class="btn btn-sm btn-outline-primary">+ Nueva Cuenta</a>
+                {% endif %}
             </div>
             <ul class="list-group list-group-flush">
                 {% for cuenta in cuentas %}
@@ -68,18 +62,22 @@
                                 <span class="badge bg-info-subtle text-info border border-info ms-1">💳 Corriente</span>
                             {% elif cuenta.tipo_cuenta == 'AHORRO' %}
                                 <span class="badge bg-warning-subtle text-warning-emphasis border border-warning ms-1">🐷 Ahorro</span>
-                            {% else %}
+                            {% elif cuenta.tipo_cuenta == 'VISTA' %}
+                                <span class="badge bg-success-subtle text-success border border-success ms-1">📱 Vista</span>
+                                {% else %}
                                 <span class="badge bg-secondary ms-1">{{ cuenta.tipo_cuenta }}</span>
                             {% endif %}
                         </div>
                         <div class="d-flex align-items-center gap-2">
                             <span class="badge bg-primary rounded-pill fs-6">${{ cuenta.saldo|intcomma }}</span>
-                            <a href="{% url 'eliminar_cuenta' cuenta.id %}" 
-                               class="btn btn-sm btn-outline-danger" 
-                               onclick="return confirm('¿Deseas eliminar esta cuenta?');"
-                               title="Eliminar Cuenta">
-                                🗑️
-                            </a>
+                            {% if user.is_staff %}    <!-- 🔒 CONTROL: Solo muestra el basurero 🗑️ si el usuario es STAFF -->
+                                <a href="{% url 'eliminar_cuenta' cuenta.id %}" 
+                                   class="btn btn-sm btn-outline-danger" 
+                                   onclick="return confirm('¿Deseas eliminar esta cuenta?');"
+                                   title="Eliminar Cuenta">
+                                    🗑️
+                                </a>
+                            {% endif %}
                         </div>
                     </li>
                 {% empty %}

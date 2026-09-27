@@ -22,6 +22,18 @@
           Hola, <strong>{{ user.username }}</strong>
         </span>
      </div>    
+        <!-- Bloque de Mensajes de Django (Alertas) -->
+        {% if messages %}
+            <div class="mb-3">
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                {{ message.message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+        </div>
+        {% endif %}
+
         <!-- Botón para Cerrar Sesión (Logout) por método POST -->
         <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}  <!-- <-- ESTA LÍNEA ES IMPRESCINDIBLE -->
