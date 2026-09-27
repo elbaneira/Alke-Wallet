@@ -44,9 +44,10 @@ Mira la demostración técnica de funcionamiento en YouTube:
 
 [![Ver Video en YouTube](https://img.youtube.com/vi/ngTyHrCc1go/maxresdefault.jpg)](https://youtu.be/ngTyHrCc1go)
 
-👉 **[Ver Video de Demostración de Alke Wallet](https://youtu.be/ngTyHrCc1go)**
+👉 **[[Haz clic aquí si la imagen no abre el video]](https://youtu.be/ngTyHrCc1go)**
 
 ---
+
 
 ## 🛠️ Arquitectura y Tecnologías
 
@@ -102,6 +103,7 @@ Para probar el sistema con perfiles configurados:
 | **Cliente 1** | `Juan` | *(juan202610)* | Cuenta origen en demostración |
 | **Cliente 2** | `ana` | *(ana202610)* | Cuenta destino en demostración |
 | **Cliente 3** | `Paola` | *(paola202610)* | Cuenta destino en demostración |
+
 ---
 
 ## ⚙️ Configuración e Instalación Local
@@ -164,7 +166,7 @@ modelo para desarrollar una aplicación orientada a la gestión de un condominio
 
 ### 2. Clonar el Repositorio
 ```bash
-git clone [https://github.com/tu-usuario/alke-wallet.git](https://github.com/elbaneira/AlkeWallet.git)
+git clone [https://github.com/tu-usuario/Alke-Wallet.git](https://github.com/elbaneira/Alke-Wallet.git)
 cd AlkeWallet
 
 ---
