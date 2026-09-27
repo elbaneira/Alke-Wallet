@@ -148,13 +148,12 @@ Para facilitar la revisión y prueba de roles en la plataforma, puede utilizar l
 El proyecto cuenta con pruebas unitarias para verificar la disponibilidad de las rutas principales e integridad del sistema.
 
 Para ejecutar las pruebas en el entorno local:
-
 ```bash
 python manage.py test
  ``` 
 🧪 Pruebas Unitarias
 
-<img src="docs/img/evidencia_pruebas.jpg" alt="Pruebas Unitarias" width="500">
+<img width="3000" height="1017" alt="evidencia_pruebas" src="https://github.com/user-attachments/assets/fe7637e2-6d67-4c5b-a1af-781970af7dfb" />
 
 🧩 Proyección del proyecto
 
